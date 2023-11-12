@@ -24,6 +24,8 @@ async function run() {
         await client.connect();
 
 
+
+
         const menuCollection = client.db("bistroDB").collection("menu");
         const reviewCollection = client.db("bistroDB").collection("reviews");
 
@@ -40,11 +42,10 @@ async function run() {
 
 
 
-
-
-
-
-
+        app.get('/menucount', async (req, res) => {
+            const count = await menuCollection.estimatedDocumentCount();
+            res.send({ count });
+        })
 
 
         await client.db("admin").command({ ping: 1 });
