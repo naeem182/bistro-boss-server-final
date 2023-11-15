@@ -23,11 +23,29 @@ async function run() {
     try {
         await client.connect();
 
-
+        /* --------------------------------
+         *      NAMING CONVENTION
+         * --------------------------------
+         * app.get('/users')
+         * app.get('/users/:id')
+         * app.post('/users')
+         * app.put('/users/:id')
+         * app.patch('/users/:id')
+         * app.delete('/users/:id')
+         * 
+        */
 
 
         const menuCollection = client.db("bistroDB").collection("menu");
         const reviewCollection = client.db("bistroDB").collection("reviews");
+        const cartCollection = client.db("bistroDB").collection("carts");
+
+        // carts collection
+        app.post('/carts', async (req, res) => {
+            const cartItem = req.body;
+            const result = await cartCollection.insertOne(cartItem);
+            res.send(result);
+        })
 
         app.get('/menu', async (req, res) => {
             const result = await menuCollection.find().toArray();
