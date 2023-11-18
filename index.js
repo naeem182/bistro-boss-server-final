@@ -154,6 +154,13 @@ async function run() {
             const result = await cartCollection.deleteOne(query);
             res.send(result);
         })
+        //MENU POST
+
+        app.post('/menu', async (req, res) => {
+            const menuitem = req.body
+            const result = await menuCollection.insertOne(menuitem);
+            res.send(result);
+        })
 
         app.get('/menu', async (req, res) => {
             const result = await menuCollection.find().toArray();
