@@ -156,11 +156,45 @@ async function run() {
         })
         //MENU POST
 
-        app.post('/menu', async (req, res) => {
+        app.post('/menu', verifyToken, verifyAdmin, async (req, res) => {
             const menuitem = req.body
             const result = await menuCollection.insertOne(menuitem);
             res.send(result);
         })
+
+        //delete menu
+        app.get('/menu/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await menuCollection.findOne(query);
+            res.send(result);
+        })
+
+        app.delete('/menu/:id', verifyToken, verifyAdmin, async (req, res) => {
+            const id = req.params.id;
+            console.log('inside the')
+            const query = { _id: new ObjectId(id) }
+            const result = await menuCollection.deleteOne(query);
+            res.send(result);
+        })
+        app.patch('/menu/:id', async (req, res) => {
+            const item = req.body;
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) }
+            const updatedDoc = {
+                $set: {
+                    name: item.name,
+                    category: item.category,
+                    price: item.price,
+                    recipe: item.recipe,
+                    image: item.image
+                }
+            }
+
+            const result = await menuCollection.updateOne(filter, updatedDoc)
+            res.send(result);
+        })
+
 
         app.get('/menu', async (req, res) => {
             const result = await menuCollection.find().toArray();
@@ -171,9 +205,6 @@ async function run() {
             const result = await reviewCollection.find().toArray();
             res.send(result);
         })
-
-
-
 
         app.get('/menucount', async (req, res) => {
             const count = await menuCollection.estimatedDocumentCount();
