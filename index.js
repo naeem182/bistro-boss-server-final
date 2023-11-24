@@ -2,12 +2,14 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 var jwt = require('jsonwebtoken');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { MongoClient, ObjectId } = require('mongodb');
 
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 5000;
+
 
 // Middleware
 app.use(cors());
@@ -36,6 +38,23 @@ async function run() {
          * app.delete('/users/:id')
          * 
         */
+        // payment intent
+        app.post('/create-payment-intent', async (req, res) => {
+            const { price } = req.body;
+            const amount = parseInt(price * 100);
+
+            const paymentIntent = await stripe.paymentIntents.create({
+                amount: amount,
+                currency: 'usd',
+                payment_method_types: ['card']
+            });
+
+            res.send({
+                clientSecret: paymentIntent.client_secret
+            })
+        })
+
+
 
 
         const menuCollection = client.db("bistroDB").collection("menu");
